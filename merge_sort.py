@@ -7,29 +7,40 @@ TIME_COMPLEXITY = {
 }
 
 
-def merge_sort(arr: List[int]) -> List[int]:
-    if len(arr) <= 1:
-        return arr.copy()
+def merge_sort(arr: List[int], trace: bool = False) -> List[int]:
+    def _merge_sort(data: List[int], depth: int) -> List[int]:
+        indent = "  " * depth
+        if trace:
+            print(f"{indent}[Merge] split: {data}")
 
-    mid = len(arr) // 2
-    left = merge_sort(arr[:mid])
-    right = merge_sort(arr[mid:])
+        if len(data) <= 1:
+            return data.copy()
 
-    merged: List[int] = []
-    i = 0
-    j = 0
+        mid = len(data) // 2
+        left = _merge_sort(data[:mid], depth + 1)
+        right = _merge_sort(data[mid:], depth + 1)
 
-    while i < len(left) and j < len(right):
-        if left[i] <= right[j]:
-            merged.append(left[i])
-            i += 1
-        else:
-            merged.append(right[j])
-            j += 1
+        merged: List[int] = []
+        i = 0
+        j = 0
 
-    merged.extend(left[i:])
-    merged.extend(right[j:])
-    return merged
+        while i < len(left) and j < len(right):
+            if left[i] <= right[j]:
+                merged.append(left[i])
+                i += 1
+            else:
+                merged.append(right[j])
+                j += 1
+
+        merged.extend(left[i:])
+        merged.extend(right[j:])
+
+        if trace:
+            print(f"{indent}[Merge] merge: {left} + {right} -> {merged}")
+
+        return merged
+
+    return _merge_sort(arr, depth=0)
 
 
 if __name__ == "__main__":

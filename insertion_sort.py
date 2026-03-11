@@ -7,18 +7,31 @@ TIME_COMPLEXITY = {
 }
 
 
-def insertion_sort(arr: List[int]) -> List[int]:
+def insertion_sort(arr: List[int], trace: bool = False) -> List[int]:
     a = arr.copy()
+
+    if trace:
+        print(f"[Insertion] start: {a}")
 
     for i in range(1, len(a)):
         key = a[i]
         j = i - 1
 
+        if trace:
+            print(f"[Insertion] pick index {i} (value={key})")
+
         while j >= 0 and a[j] > key:
             a[j + 1] = a[j]
             j -= 1
+            if trace:
+                print(f"[Insertion] shift -> {a}")
 
         a[j + 1] = key
+        if trace:
+            print(f"[Insertion] place key at index {j + 1}: {a}")
+
+    if trace:
+        print(f"[Insertion] done : {a}")
 
     return a
 

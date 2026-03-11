@@ -10,16 +10,23 @@ from insertion_sort import insertion_sort
 from merge_sort import merge_sort
 from quick_sort import quick_sort
 
-Sorter = Callable[[List[int]], List[int]]
+Sorter = Callable[..., List[int]]
 
 
-def time_once(sort_fn: Sorter, data: List[int]) -> float:
+def time_once(sort_fn: Sorter, data: List[int], show_process: bool = False) -> float:
+    if show_process:
+        print(f"input : {data}")
+
     start = time.perf_counter()
-    sorted_data = sort_fn(data)
+    sorted_data = sort_fn(data, trace=show_process)
     end = time.perf_counter()
 
     if sorted_data != sorted(data):
         raise ValueError(f"{sort_fn.__name__} produced incorrect output")
+
+    if show_process:
+        print(f"output: {sorted_data}")
+        print(f"elapsed(ms): {(end - start) * 1000.0:.4f}")
 
     return (end - start) * 1000.0
 
@@ -30,6 +37,7 @@ def benchmark(
     lower: int,
     upper: int,
     seed: int,
+    show_process: bool = False,
 ) -> Dict[str, Dict[int, List[float]]]:
     rng = random.Random(seed)
 
@@ -50,8 +58,11 @@ def benchmark(
         ]
 
         for name, fn in algorithms.items():
-            for data in datasets:
-                elapsed_ms = time_once(fn, data)
+            for trial_index, data in enumerate(datasets, start=1):
+                if show_process:
+                    print("=" * 72)
+                    print(f"Algorithm: {name} | n={n} | trial={trial_index}/{trials}")
+                elapsed_ms = time_once(fn, data, show_process=show_process)
                 results[name][n].append(elapsed_ms)
 
     return results
@@ -122,6 +133,11 @@ def parse_args() -> argparse.Namespace:
         default=42,
         help="Random seed for reproducibility",
     )
+    parser.add_argument(
+        "--show-process",
+        action="store_true",
+        help="Print full sorting process for every algorithm and trial",
+    )
     return parser.parse_args()
 
 
@@ -138,6 +154,7 @@ def main() -> None:
         lower=args.lower,
         upper=args.upper,
         seed=args.seed,
+        show_process=args.show_process,
     )
     print_report(results, sizes)
 

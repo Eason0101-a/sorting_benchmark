@@ -5,11 +5,12 @@ TIME_COMPLEXITY = {
     "average": "O(n^2)",
     "worst": "O(n^2)",
 }
-
-
-def bubble_sort(arr: List[int]) -> List[int]:
+def bubble_sort(arr: List[int], trace: bool = False) -> List[int]:
     a = arr.copy()
     n = len(a)
+
+    if trace:
+        print(f"[Bubble] start: {a}")
 
     for i in range(n):
         swapped = False
@@ -17,8 +18,17 @@ def bubble_sort(arr: List[int]) -> List[int]:
             if a[j] > a[j + 1]:
                 a[j], a[j + 1] = a[j + 1], a[j]
                 swapped = True
+                if trace:
+                    print(f"[Bubble] swap index {j} and {j + 1}: {a}")
         if not swapped:
+            if trace:
+                print(f"[Bubble] no swap on pass {i}, stop early")
             break
+        if trace:
+            print(f"[Bubble] end pass {i}: {a}")
+
+    if trace:
+        print(f"[Bubble] done : {a}")
 
     return a
 
